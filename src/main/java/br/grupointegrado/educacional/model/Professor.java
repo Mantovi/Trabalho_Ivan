@@ -2,11 +2,9 @@ package br.grupointegrado.educacional.model;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
-
 @Entity
-@Table(name = "alunos")
-public class Aluno {
+@Table(name = "professores")
+public class Professor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,12 +16,11 @@ public class Aluno {
     @Column(length = 100, nullable = false)
     private String email;
 
-    @Column(length = 20, nullable = false)
-    private String matricula;
+    @Column(length = 15, nullable = false)
+    private String telefone;
 
-    @Column(nullable = false)
-    private Date dataNascimento;
-
+    @Column(length = 100, nullable = false)
+    private String especialidade;
 
     public Integer getId() {
         return id;
@@ -49,19 +46,19 @@ public class Aluno {
         this.email = email;
     }
 
-    public String getMatricula() {
-        return matricula;
+    public String getTelefone() {
+        return telefone;
     }
 
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
-    public Date getDataNascimento() {
-        return dataNascimento;
+    public String getEspecialidade() {
+        return especialidade;
     }
 
-    public void setDataNascimento(Date dataNascimento) {
-        this.dataNascimento = dataNascimento;
+    public void setEspecialidade(String especialidade) {
+        this.especialidade = especialidade;
     }
 }
