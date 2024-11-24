@@ -17,7 +17,6 @@ public class AlunoController {
     private AlunoRepository repository;
 
     @GetMapping
-
     public ResponseEntity<List<Aluno>> findAll() {
         return ResponseEntity.ok(this.repository.findAll());
     }
