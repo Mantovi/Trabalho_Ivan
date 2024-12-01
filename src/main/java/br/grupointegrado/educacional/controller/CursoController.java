@@ -24,7 +24,7 @@ public class CursoController {
     @GetMapping("/{id}")
     public ResponseEntity<Curso> findById(@PathVariable Integer id){
         Curso curso = this.repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Curse Not Found"));
+                .orElseThrow(() -> new IllegalArgumentException("Course Not Found"));
 
         return ResponseEntity.ok(curso);
     }
@@ -55,7 +55,7 @@ public class CursoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id){
         Curso curso = this.repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Curse Not Found"));
+                .orElseThrow(() -> new IllegalArgumentException("Course Not Found"));
 
         this.repository.delete(curso);
         return ResponseEntity.noContent().build();
