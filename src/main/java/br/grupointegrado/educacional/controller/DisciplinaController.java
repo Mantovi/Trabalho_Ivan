@@ -3,9 +3,11 @@ package br.grupointegrado.educacional.controller;
 import br.grupointegrado.educacional.dto.DisciplinaRequestDTO;
 import br.grupointegrado.educacional.model.Disciplina;
 import br.grupointegrado.educacional.model.Curso;
+import br.grupointegrado.educacional.model.Nota;
 import br.grupointegrado.educacional.model.Professor;
 import br.grupointegrado.educacional.repository.CursoRepository;
 import br.grupointegrado.educacional.repository.DisciplinaRepository;
+import br.grupointegrado.educacional.repository.NotaRepository;
 import br.grupointegrado.educacional.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ public class DisciplinaController {
     @Autowired
     private DisciplinaRepository disciplinaRepository;
 
+    @Autowired
+    private NotaRepository notaRepository;
+
     @GetMapping
     public ResponseEntity<List<Disciplina>> findAll(){
          return ResponseEntity.ok(this.repository.findAll());
@@ -39,6 +44,16 @@ public class DisciplinaController {
                 .orElseThrow(() -> new IllegalArgumentException("Discipline Not Found"));
 
         return ResponseEntity.ok(disciplina);
+    }
+
+    @GetMapping("/{id}/notas")
+    public ResponseEntity<List<Nota>> getNotas(@PathVariable Integer id) {
+        Disciplina disciplina = this.repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Discipline Not Found"));
+
+        List<Nota> notas = this.notaRepository.findByDisciplina(disciplina);
+
+        return ResponseEntity.ok(notas);
     }
 
     @PostMapping

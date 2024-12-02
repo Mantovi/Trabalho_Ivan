@@ -2,13 +2,15 @@ package br.grupointegrado.educacional.controller;
 
 import br.grupointegrado.educacional.dto.TurmaRequestDTO;
 import br.grupointegrado.educacional.model.Curso;
+import br.grupointegrado.educacional.model.Matricula;
+import br.grupointegrado.educacional.model.Nota;
 import br.grupointegrado.educacional.model.Turma;
-import br.grupointegrado.educacional.repository.CursoRepository;
-import br.grupointegrado.educacional.repository.TurmaRepository;
+import br.grupointegrado.educacional.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,6 +21,15 @@ public class TurmaController {
     private TurmaRepository repository;
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private NotaRepository notaRepository;
+
+    @Autowired
+    AlunoRepository alunoRepository;
+
+    @Autowired
+    MatriculaRepository matriculaRepository;
 
     @GetMapping
     public ResponseEntity<List<Turma>> findAll() {
@@ -33,34 +44,51 @@ public class TurmaController {
         return ResponseEntity.ok(turma);
     }
 
+    @GetMapping("/{id}/notas")
+    public ResponseEntity<List<Nota>> getNotes(@PathVariable Integer id) {
+        Turma turma = this.repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Turma não encontrado."));
+
+        List<Nota> notas = new ArrayList<>();
+        for(Matricula matricula : turma.getMatriculas()) {
+            notas.addAll(matricula.getNotas());
+        }
+
+        return ResponseEntity.ok(notas);
+    }
+
     @PostMapping
-    public Turma save(@RequestBody TurmaRequestDTO dto) {
+    public ResponseEntity<Turma> save(@RequestBody TurmaRequestDTO dto) {
 
         Turma turma = new Turma();
-        Curso curso = cursoRepository.findById(dto.curso_id())
-                        .orElseThrow(() -> new IllegalArgumentException("Course with ID" + dto.curso_id() + "Not Found"));
-
-        turma.setAno(dto.ano());
         turma.setSemestre(dto.semestre());
-        turma.setCurso(curso);
+        turma.setAno(dto.ano());
 
-        return this.repository.save(turma);
+        Curso curso= this.cursoRepository.findById(dto.curso_id())
+                .orElseThrow(() -> new IllegalArgumentException("Curse Not Found"));
+
+
+        turma.setCurso(curso);
+        Turma turmaSaved = this.repository.save(turma);
+        return ResponseEntity.ok(turmaSaved);
     }
 
     @PutMapping("/{id}")
-    public Turma update(@PathVariable Integer id,
-                        @RequestBody TurmaRequestDTO dto) {
+    public ResponseEntity<Turma> update(@PathVariable Integer id, @RequestBody TurmaRequestDTO dto) {
         Turma turma = this.repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Class with ID" + id + "Not Found"));
-
-        Curso curso = cursoRepository.findById(dto.curso_id())
-                        .orElseThrow(() -> new IllegalArgumentException("Course with ID" + dto.curso_id() + "Not Found"));
+                .orElseThrow(() -> new IllegalArgumentException("Class Not Found"));
 
         turma.setAno(dto.ano());
         turma.setSemestre(dto.semestre());
+
+        Curso curso = cursoRepository.findById(dto.curso_id())
+                .orElseThrow(() -> new IllegalArgumentException("Course Not Found"));
+
         turma.setCurso(curso);
 
-        return this.repository.save(turma);
+        Turma turmaSaved = this.repository.save(turma);
+
+        return ResponseEntity.ok(turmaSaved);
     }
 
     @DeleteMapping("/{id}")

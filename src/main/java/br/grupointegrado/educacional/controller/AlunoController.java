@@ -1,8 +1,12 @@
 package br.grupointegrado.educacional.controller;
 
 import br.grupointegrado.educacional.dto.AlunoRequestDTO;
+import br.grupointegrado.educacional.dto.DisciplinaResponseDTO;
+import br.grupointegrado.educacional.dto.NotaResponseDTO;
+import br.grupointegrado.educacional.dto.RelatorioNotasResponseDTO;
 import br.grupointegrado.educacional.model.Aluno;
 import br.grupointegrado.educacional.model.Matricula;
+import br.grupointegrado.educacional.model.Nota;
 import br.grupointegrado.educacional.model.Turma;
 import br.grupointegrado.educacional.repository.AlunoRepository;
 import br.grupointegrado.educacional.repository.MatriculaRepository;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -109,8 +114,39 @@ public class AlunoController {
 
         Aluno alunoNota = this.repository.save(aluno);
         return ResponseEntity.ok(alunoNota);
-
     }
+
+
+    @GetMapping("/{aluno_id}/boletim")
+    public ResponseEntity<RelatorioNotasResponseDTO> getNotas(@PathVariable Integer aluno_id) {
+
+        Aluno aluno = this.repository.findById(aluno_id)
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
+
+        List<NotaResponseDTO> notas = new ArrayList<>();
+
+        if (!aluno.getMatriculas().isEmpty()) {
+            for (Matricula matricula : aluno.getMatriculas()) {
+                for (Nota nota : matricula.getNotas()) {
+
+                    notas.add(
+                            new NotaResponseDTO(
+                                    nota.getNota(),
+                                    nota.getData_lancamento(),
+
+                                    new DisciplinaResponseDTO(
+                                            nota.getDisciplina().getNome(),
+                                            nota.getDisciplina().getCodigo()
+                                    )
+                            )
+                    );
+                }
+            }
+        }
+            return ResponseEntity.ok(new RelatorioNotasResponseDTO(notas));
+    }
+
+
 }
 
 
