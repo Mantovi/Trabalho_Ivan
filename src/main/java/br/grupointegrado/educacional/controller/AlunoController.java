@@ -2,7 +2,11 @@ package br.grupointegrado.educacional.controller;
 
 import br.grupointegrado.educacional.dto.AlunoRequestDTO;
 import br.grupointegrado.educacional.model.Aluno;
+import br.grupointegrado.educacional.model.Matricula;
+import br.grupointegrado.educacional.model.Turma;
 import br.grupointegrado.educacional.repository.AlunoRepository;
+import br.grupointegrado.educacional.repository.MatriculaRepository;
+import br.grupointegrado.educacional.repository.TurmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,12 @@ public class AlunoController {
 
     @Autowired
     private AlunoRepository repository;
+
+    @Autowired
+    private MatriculaRepository matriculaRepository;
+
+    @Autowired
+    private TurmaRepository turmaRepository;
 
     @GetMapping
     public ResponseEntity<List<Aluno>> findAll() {
@@ -48,18 +58,18 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
-    public Aluno update(@PathVariable Integer id,
-                        @RequestBody AlunoRequestDTO dto){
+    public ResponseEntity<Aluno> update(@PathVariable Integer id, @RequestBody AlunoRequestDTO dto){
         Aluno aluno = this.repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Not Found"));
+                .orElseThrow(() -> new IllegalArgumentException("Student Not Found"));
 
         aluno.setNome(dto.nome());
         aluno.setEmail(dto.email());
         aluno.setMatricula(dto.matricula());
         aluno.setDataNascimento(dto.data_nascimento());
 
-        return this.repository.save(aluno);
+        return ResponseEntity.ok(this.repository.save(aluno));
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
@@ -69,10 +79,38 @@ public class AlunoController {
         this.repository.delete(aluno);
         return ResponseEntity.noContent().build();
     }
-}
+
         //    public void delete(@PathVariable Integer id){
         //        Aluno aluno = this.repository.findById(id)
         //                .orElseThrow(() -> new IllegalArgumentException("Not Found"));
         //        this.repository.delete(aluno);
         //    }
         //}
+
+    @PostMapping("/{aluno_id}/matricula")
+    public ResponseEntity<Aluno> adicionaMatricula(@PathVariable Integer aluno_id, @RequestBody Integer turma_id){
+        Aluno aluno = this.repository.findById(aluno_id)
+                .orElseThrow(() -> new IllegalArgumentException("Student Not Found"));
+        Turma turma = this.turmaRepository.findById(turma_id)
+                .orElseThrow(() -> new IllegalArgumentException("Class Not Found"));
+
+        Matricula matricula = new Matricula();
+        matricula.setAluno(aluno);
+        matricula.setTurma(turma);
+
+        boolean matriculaExistente = aluno.getMatriculas().stream()
+                .anyMatch(matri -> matri.getTurma().getId().equals(turma_id));
+
+        if (!matriculaExistente) {
+            aluno.addMatricula(matricula);
+        } else {
+            throw new IllegalArgumentException("Student already enrolled in this class");
+        }
+
+        Aluno alunoNota = this.repository.save(aluno);
+        return ResponseEntity.ok(alunoNota);
+
+    }
+}
+
+

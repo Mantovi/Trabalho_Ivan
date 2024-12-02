@@ -16,7 +16,7 @@ public class Turma {
     @Column(nullable = false)
     private Integer semestre;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "curso_id", referencedColumnName = "id", nullable = false)
     private Curso curso;
 
