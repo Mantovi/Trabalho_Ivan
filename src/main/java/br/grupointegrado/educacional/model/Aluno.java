@@ -28,7 +28,7 @@ public class Aluno {
     private Date dataNascimento;
 
     @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("aluno")
+    @JsonIgnoreProperties({"aluno"})
     private List<Matricula> matriculas;
 
 

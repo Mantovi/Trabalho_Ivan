@@ -1,5 +1,7 @@
 package br.grupointegrado.educacional.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,10 +22,12 @@ public class Nota {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "matricula_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("notas")
     private Matricula matricula;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "disciplina_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("disciplina")
     private Disciplina disciplina;
 
     public Integer getId() {

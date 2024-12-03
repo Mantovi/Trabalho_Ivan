@@ -117,11 +117,11 @@ public class AlunoController {
     }
 
 
-    @GetMapping("/{aluno_id}/boletim")
+    @GetMapping("/{aluno_id}/RelatorioNotas")
     public ResponseEntity<RelatorioNotasResponseDTO> getNotas(@PathVariable Integer aluno_id) {
 
         Aluno aluno = this.repository.findById(aluno_id)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Student Not Found"));
 
         List<NotaResponseDTO> notas = new ArrayList<>();
 

@@ -49,12 +49,12 @@ public class TurmaController {
         Turma turma = this.repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Turma não encontrado."));
 
-        List<Nota> notas = new ArrayList<>();
+        List<Nota> nota = new ArrayList<>();
         for(Matricula matricula : turma.getMatriculas()) {
-            notas.addAll(matricula.getNotas());
+            nota.addAll(matricula.getNotas());
         }
 
-        return ResponseEntity.ok(notas);
+        return ResponseEntity.ok(nota);
     }
 
     @PostMapping

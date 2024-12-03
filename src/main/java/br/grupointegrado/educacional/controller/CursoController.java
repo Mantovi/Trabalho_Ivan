@@ -43,7 +43,7 @@ public class CursoController {
     public Curso update(@PathVariable Integer id,
                         @RequestBody CursoRequestDTO dto){
         Curso curso = this.repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Not Found"));
+                .orElseThrow(() -> new IllegalArgumentException("Course Not Found"));
 
         curso.setNome(dto.nome());
         curso.setCodigo(dto.codigo());
